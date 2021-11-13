@@ -1,5 +1,5 @@
 # Telegram notifier for mijnafvalwijzer.nl
-Send Telegram message reminders a day ahaead of trash bin collection pick-up (gft, paper or pmt) as published on `https://mijnafvalwijzer.nl`. 
+Send Telegram message reminders a day ahaead of trash bin collection (gft, paper or pmt) as published on `https://mijnafvalwijzer.nl`. 
 * Written in Python and intended to run on Docker
 * Telegram's personal bots feature is used, without need of third-party middleware or private data exposure
 
