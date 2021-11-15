@@ -1,1 +1,1 @@
-0 19 * * * python /app/afvalwijzer.py
+0 19 * * * cd /app && python afvalwijzer.py >> cron.log 2>&1
