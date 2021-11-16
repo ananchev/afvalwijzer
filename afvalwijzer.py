@@ -1,4 +1,4 @@
-from datetime import datetime, date
+from datetime import datetime, timedelta
 import requests
 import os
 from bs4 import BeautifulSoup
@@ -35,12 +35,11 @@ def parse_date(date_str: str) -> datetime:
 
     # date format is in NL locale and we set same for the runtime to be able to parse it
     # make sure locale is installed on the machine where script would run
-    # locale.setlocale(locale.LC_TIME, 'nl_NL.utf8') # locale name on arch
-    locale.setlocale(locale.LC_TIME, 'nl_NL.UTF-8') #locale name on alpine used on docker
+    locale.setlocale(locale.LC_TIME, 'nl_NL.UTF-8')
 
     # date = 'dinsdag 30 november 2011'
     format = '%A %d %B %Y'
-    retval = datetime.strptime(date_str, format)
+    retval = datetime.strptime(date_str, format).date()
 
     # switch back to original locale
     locale.setlocale(locale.LC_TIME, old_loc)
@@ -59,12 +58,12 @@ def parse_webpage(soup: BeautifulSoup, month_year: tuple[str, int], category: st
 
 
 def publish_to_telegram(collection_date: tuple[str, datetime]):
-    tomorrow = datetime.today() + relativedelta.relativedelta(days=1)
-
+    tomorrow = datetime.today() + timedelta(days=1)
+ 
     # below is for test only
     # tomorrow = date(2021, 11, 15) + relativedelta.relativedelta(days=1) 
 
-    if  tomorrow == collection_date[1].date():
+    if  tomorrow == collection_date[1]:
         msg = f"*__Tomorrow__*, {tomorrow.strftime('%A, %d %B')}, is *__{collection_date[0]} bin collection__* day\."
         msg_for_log = msg.replace("*","").replace("__","").replace("\\","")  #remove markdown formatting characters
         print(msg_for_log)
@@ -95,7 +94,7 @@ def run():
 
     # get the next collection date per category
     for cat in CATEGORIES:
-        next_date = next(d for d in collection_dates if cat in d[0] and datetime.today() < d[1])
+        next_date = next(d for d in collection_dates if cat in d[0] and datetime.today().date() < d[1])
         logging.info(f"Next {cat} collection date: {next_date[1].strftime('%d-%B-%Y')}.")
 
         # implement update for openhab here
