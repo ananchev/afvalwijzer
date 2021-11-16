@@ -9,7 +9,7 @@ Send Telegram message reminders a day ahaead of trash bin collection (gft, paper
 1. Use this [https://telegram.me/BotFather](https://telegram.me/BotFather) to open your Telegram client and start a chat with the BotFather. Send the message `/newbot` and follow the instructions.
 2. Open a terminal and run `python -m pip install telegram-send` to install telegram_send
 3. Continue in the terminal by running `telegram-send --configure --config telegram-send.conf`. This will trigger the authentication process required to send messages via the bot. 
-4. Keep the `telegram-send.conf` file secure as it can be used by anyone to control your bot. When (re)creating the docker image, it is required in the app root directory together with the Dockerfile. Once the image is created, it can be removed or stored elsewhere.
+4. Keep the `telegram-send.conf` file secure as it can be used by anyone to control your bot. When (re)creating the docker image, it is required in the app root directory together with the Dockerfile. Once the image is created, it can be removed or stored elsewhere. 
 
 
 ## Create the Docker image
