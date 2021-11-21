@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 import locale
 from dateutil import relativedelta
 import telegram_send
+import paho.mqtt.publish as paho_publisher
 import argparse
 
 import logging
@@ -28,15 +29,21 @@ TELEGRAM_CONF = "telegram-send.conf" # generate the conf file: telegram-send --c
 # below environment variables would be set if script is started with --pub2mqtt
 MQTT_SERVER = os.getenv("MQTT_SERVER")
 MQTT_SERVER_PORT = os.getenv("MQTT_SERVER_PORT") or 1883
+MQTT_TOPIC = os.getenv("MQTT_TOPIC")
 
 class Afvalwijzer():
 
     # list object to store the parsed collection dates
     collection_dates = list()
 
+    # is publishing to mqtt requested?
+    pub2mqtt = False
+    mqtt_msgs = list()
+
 
     def __init__(self, pub2mqtt = False) -> None:
-        self.pub2mqtt = pub2mqtt
+        if pub2mqtt:
+            self.pub2mqtt = True
 
 
     def parse_date(self, date_str: str) -> datetime:
@@ -76,7 +83,7 @@ class Afvalwijzer():
         if  tomorrow == collection_date[1]:
             msg = f"*__Tomorrow__*, {tomorrow.strftime('%A, %d %B')}, is *__{collection_date[0]} bin collection__* day\."
             msg_for_log = msg.replace("*","").replace("__","").replace("\\","")  #remove markdown formatting characters
-            print(msg_for_log)
+            # print(msg_for_log)
             logging.info(msg_for_log)
             telegram_send.send(messages=[msg], conf=TELEGRAM_CONF, parse_mode="MarkdownV2")
         else:
@@ -85,8 +92,11 @@ class Afvalwijzer():
 
 
     def publish_to_mqtt(self):
-        pass
-
+        paho_publisher.multiple(self.mqtt_msgs, 
+                                hostname=MQTT_SERVER, 
+                                port=MQTT_SERVER_PORT, 
+                                client_id="avfalwijzer_publisher")
+        logging.info(f"Published the upcomming collection dates to mqtt broker {MQTT_SERVER}")
 
 
     def run(self):
@@ -115,7 +125,10 @@ class Afvalwijzer():
             self.publish_to_telegram(next_date)
 
             if self.pub2mqtt:
-                self.publish_to_mqtt()
+                self.mqtt_msgs.append({"topic":f"{MQTT_TOPIC}/{cat}", "payload":next_date[1].strftime('%A, %d %b')})
+        
+        if self.pub2mqtt:
+            self.publish_to_mqtt()
 
 
 if __name__ == '__main__':
