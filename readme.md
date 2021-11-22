@@ -35,6 +35,15 @@ docker run \
         -d \
         afvalwijzer:latest
 ```
+### MQTT publishing
+In case mqtt publishing in addtion to telegram is requested:
+1. The script should be started with --pub2mqtt as `python afvalwijzer.py --pub2mqtt`. This should be also added into the `cronjobs` file before the image gets created.
+2. The following environment variables are needed as part of the docker run command
+```console
+        -e MQTT_SERVER=<mqtt broker ip> \
+        -e MQTT_SERVER_PORT=<optional, only if mqtt port if different than 1883> \
+        -e MQTT_TOPIC=<topic under which to publish categories and pickup dates> \
+```
 
 ### Export image to file
 Generate image tar file to copy and load into a remote Docker host
