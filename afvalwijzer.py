@@ -66,11 +66,18 @@ class Afvalwijzer():
 
     def parse_webpage(self, soup: BeautifulSoup, month_year: tuple[str, int], category: str):
         res = soup.select(f"div#{month_year[0]} .column .{category} .span-line-break") # css selector can be used
-        #return res
+
         for e in res:
-            date = self.parse_date(e.get_text() + " " + str(month_year[1]))
+            e_txt = e.get_text()
+
+            # check if the date was supplied with year included
+            # this is how mijnafvalwijzer seems to publish the dates in December)
+            if (e_txt[-4:].isnumeric()): 
+                date = self.parse_date(e_txt)
+            else:
+                date = self.parse_date(e_txt + " " + str(month_year[1]))
             self.collection_dates.append((category, date))
-            # print(f"{category}: {e.get_text()} {month_year[1]}")
+
 
 
 
