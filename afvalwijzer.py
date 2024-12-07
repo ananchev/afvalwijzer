@@ -23,7 +23,7 @@ logging.basicConfig(level=logging.INFO,
 
 
 URL = os.environ["URL"]
-CATEGORIES = ["gft", "papier", "pmd"]
+CATEGORIES = ["gft", "papier"]
 TELEGRAM_CONF = "telegram-send.conf" # generate the conf file: telegram-send --configure --config <name>.conf
 
 # below environment variables would be set if script is started with --pub2mqtt
